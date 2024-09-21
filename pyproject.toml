@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "fastrpc"
+version = "0.1.0"
+package-mode = false
+description = "An RPC layer over FastAPI"
+authors = ["Andrew Stefanich <andrew.stefanich@buoyhealth.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+debugpy = "^1.8.5"
+pre-commit = "^3.8.0"
+ruff = "^0.6.6"
+
+[tool.ruff]
+lint.ignore = ["E731"] # allow assignment of lambdas to a symbol
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
