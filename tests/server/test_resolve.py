@@ -1,38 +1,46 @@
-import os
 import pytest
 import sys
+from enum import StrEnum
 from fastrpc.server import _resolve_remote_procedures
 from importlib import import_module
 from parametrization import Parametrization as P
 from pathlib import Path
-from types import SimpleNamespace as ___
 
 
-Case = lambda s: P.case(name=s, fix=s)
+FIX_PATH = Path(__file__).parent / "fixtures"
 
 
-# @pytest.fixture
-# def add_path():
-#     def inner(dir, fix):
-#         path = Path(__file__).parent / "fixtures" / dir
-#         sys.path.insert(0, str(path / fix))
-#         yield 4
-#         sys.path.pop(0)
+class Expected(StrEnum):
+    OK = "ok"
+    ERR = "err"
 
-#     return inner
+
+Test = lambda ex, fix: P.case(name=f"{ex}{fix}", ex=ex, fix=fix)
 
 
 @P.autodetect_parameters()
-@Case("_1")
-@Case("_2")
-@Case("_3")
-def test_ok(fix):
-    ok_path = Path(__file__).parent / "fixtures" / "ok"
-    sys.path.insert(0, str(ok_path))
-    module = import_module(fix)
-    expected = module.EXPECTED
-    actual = _resolve_remote_procedures(ok_path / fix)
+@Test(Expected.OK, "_1")
+@Test(Expected.OK, "_2")
+@Test(Expected.OK, "_3")
+@Test(Expected.ERR, "_1")
+def test_ok(ex, fix):
+    path = FIX_PATH / ex.value
+    sys.path.insert(0, str(path))
     try:
-        assert frozenset(actual.keys()) == expected
+        module = import_module(fix)
+        if fix in sys.modules:  # avoid module caching
+            if "fastrpc" in str(module):
+                del sys.modules[fix]
+                module = import_module(fix)
+        expected = module.EXPECTED
+        match ex:
+            case Expected.OK:
+                actual = _resolve_remote_procedures(path / fix)
+                assert frozenset(actual.keys()) == expected
+            case Expected.ERR:
+                with pytest.raises(expected):
+                    actual = _resolve_remote_procedures(path / fix)
+            case x:
+                pytest.fail(f"Unknown fixture dir: {x}")
     finally:
         sys.path.pop(0)

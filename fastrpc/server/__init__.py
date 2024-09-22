@@ -5,7 +5,7 @@ from fastrpc.server.decorators import remote_procedure
 from pathlib import Path
 from typing import TypedDict
 from returns.result import safe, Success, Failure
-from .exceptions import CodeGenException, DuplicatedNameException
+from .exceptions import DuplicatedNameException, SynchronousProcedureException
 
 
 @dataclass
@@ -20,6 +20,17 @@ class _RemoteProcedureMap(TypedDict):
 
 
 class _RemoteProcedureVisitor(ast.NodeVisitor):
+    def visit_FunctionDef(self, node):
+        for decorator in node.decorator_list:
+            match decorator:
+                case ast.Name():
+                    if decorator.id == remote_procedure.__name__:
+                        raise SynchronousProcedureException(
+                            path=self.filepath,
+                            lineno=node.lineno,
+                            msg="@remote_procedure can only be used on async fns",
+                        )
+
     def visit_AsyncFunctionDef(self, node):
         for decorator in node.decorator_list:
             match decorator:
