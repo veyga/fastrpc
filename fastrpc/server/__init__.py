@@ -1,10 +1,9 @@
 import ast
-import subprocess
 from dataclasses import dataclass
 from fastrpc.server.decorators import remote_procedure
 from pathlib import Path
+from textwrap import dedent
 from typing import TypedDict
-from returns.result import safe, Success, Failure
 from .exceptions import DuplicatedNameException, SynchronousProcedureException
 
 
@@ -41,10 +40,12 @@ class _RemoteProcedureVisitor(ast.NodeVisitor):
                             raise DuplicatedNameException(
                                 path=self.filepath,
                                 lineno=node.lineno,
-                                msg=(
-                                    f"The remote_procedure name {node.name} "
-                                    f"is already assigned in {existing.module}"
-                                ),
+                                msg=dedent(
+                                    f"""
+                      The remote_procedure name '{node.name}' is already assigned.
+                      [see {existing.module}]
+                              """
+                                ).strip(),
                             )
                         else:
                             self.matches[node.name] = _RemoteProcedure(

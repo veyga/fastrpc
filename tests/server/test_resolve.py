@@ -15,15 +15,15 @@ class Expected(StrEnum):
     ERR = "err"
 
 
-Test = lambda ex, fix: P.case(name=f"{ex}{fix}", ex=ex, fix=fix)
+Case = lambda ex, fix: P.case(name=f"{ex}{fix}", ex=ex, fix=fix)
 
 
 @P.autodetect_parameters()
-@Test(Expected.OK, "_1")
-@Test(Expected.OK, "_2")
-@Test(Expected.OK, "_3")
-@Test(Expected.ERR, "_1")
-@Test(Expected.ERR, "_2")
+@Case(Expected.OK, "_1")
+@Case(Expected.OK, "_2")
+@Case(Expected.OK, "_3")
+@Case(Expected.ERR, "_1")
+@Case(Expected.ERR, "_2")
 def test_it(ex, fix):
     path = FIX_PATH / ex.value
     sys.path.insert(0, str(path))
@@ -39,8 +39,14 @@ def test_it(ex, fix):
                 actual = _resolve_remote_procedures(path / fix)
                 assert frozenset(actual.keys()) == expected
             case Expected.ERR:
+                # try:
+                #   _resolve_remote_procedures(path / fix)
+                # except expected as e:
+                #   print(f"The exception is\n{e}")
+                # else:
+                #   pytest.fail(f"Expected {expected} was not raised")
                 with pytest.raises(expected):
-                    actual = _resolve_remote_procedures(path / fix)
+                    _resolve_remote_procedures(path / fix)
             case x:
                 pytest.fail(f"Unknown fixture dir: {x}")
     finally:
