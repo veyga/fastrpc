@@ -4,33 +4,43 @@ from pathlib import Path
 
 from _fastrpc.server.exceptions import (
     CodeGenExceptions,
-    UntypedParameterException,
+    UnsupportedParameter,
+    UnsupportedParameterException,
+    UnsupportedParameterException,
 )
 
+path = Path(__file__).parent / "source.py"
 EXPECTED = CodeGenExceptions(
     [
-        UntypedParameterException(
-            path=Path(__file__).parent / "source.py",
+        UnsupportedParameterException(
+            path=path,
             lineno=7,
-            parameter="x",
+            symbol="x",
+            definition=UnsupportedParameter.UNTYPED,
         ),
-        UntypedParameterException(
-            path=Path(__file__).parent / "source.py",
+        UnsupportedParameterException(
+            path=path,
             lineno=12,
-            parameter="x",
+            symbol="x",
+            definition=UnsupportedParameter.UNTYPED,
         ),
-        UntypedParameterException(
-            path=Path(__file__).parent / "source.py",
+        UnsupportedParameterException(
+            path=path,
             lineno=12,
-            parameter="y",
+            symbol="y",
+            definition=UnsupportedParameter.UNTYPED,
         ),
-        UntypedParameterException(
-            path=Path(__file__).parent / "source.py", lineno=17, parameter="y"
+        UnsupportedParameterException(
+            path=path,
+            lineno=17,
+            symbol="y",
+            definition=UnsupportedParameter.UNTYPED,
         ),
-        UntypedParameterException(
-            path=Path(__file__).parent / "source.py",
+        UnsupportedParameterException(
+            path=path,
             lineno=25,
-            parameter="z",
+            symbol="z",
+            definition=UnsupportedParameter.UNTYPED,
         ),
     ]
 )

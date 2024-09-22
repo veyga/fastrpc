@@ -60,14 +60,14 @@ def test_ok(fix, resolver, logger):
 
 # @pytest.mark.skip()
 @P.autodetect_parameters()
-# @case("_1")  # non async-func
+@case("_1")  # non async-func
 @case("_2")  # duplicate names
-# @case("_3")  # obscured
+@case("_3")  # obscured
 # @case("_4")  # nested functions
 # @case("_5")  # Methods
-# @case("_6")  # untyped return
-# @case("_7")  # return None
-# @case("_8")  # untyped args
+@case("_6")  # untyped return
+@case("_7")  # return None
+@case("_8")  # untyped args
 # @case("_9")  # args/kwargs not supported
 def test_err(fix, resolver, logger):
     actual, expected, docs = resolver("err", fix)

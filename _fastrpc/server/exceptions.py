@@ -59,8 +59,8 @@ class UnsupportedDefinitionException(CodeGenException):
 
 class UnsupportedParameter(StrEnum):
     UNTYPED = "untyped (not annotated)"
-    ARGS = "*args"
-    KWARGS = "**kwargs"
+    ARGS = "*args defined"
+    KWARGS = "**kwargs defined"
     _NA = "N/A"
 
 
@@ -69,72 +69,5 @@ class UnsupportedParameter(StrEnum):
 class UnsupportedParameterException(CodeGenException):
     path: Path = Path(__file__)
     lineno: int = -1
-    definition: UnsupportedParameter = UnsupportedParameter._NA
     symbol: str = ""
-
-
-# @prettyprint
-# @dataclass
-# class UntypedParameterException(CodeGenException):
-#     path: Path = Path(__file__)
-#     lineno: int = -1
-#     parameter: str = ""
-
-# def __str__(self) -> str:
-#     message = "@remote_procedure is decorating an invalid/incomplete definition."
-#     return dedent(
-#         f"""
-#       UntypedParameterException(
-#         msg={message}\n
-#         path={self.path}\n,
-#         lineno={self.lineno}\n,
-#         parameter={self.parameter}\n
-#       )
-#       """
-#     ).strip()
-
-
-# def __str__(self) -> str:
-#     message = "@remote_procedure is decorating an invalid/incomplete definition."
-#     return dedent(
-#         f"""
-#       UntypedParameterException(
-#         msg={message}\n
-#         path={self.path}\n,
-#         lineno={self.lineno}\n,
-#         parameter={self.parameter}\n
-#       )
-#       """
-#     ).strip()
-
-
-# def __str__(self) -> str:
-#     message = (
-#         f"@remote_procedure with name '{self.name}' already assigned."
-#         f"[see {self.existing}]"
-#     )
-#     return dedent(
-#         f"""
-#       DuplicatedNameException(
-#         path={self.path},
-#         lineno={self.lineno},
-#         msg={message}
-#         self
-#       )
-#       """
-#     ).strip()
-
-# def __str__(self) -> str:
-#     # message = (
-#     #     "@remote_procedure is decorating an invalid/incomplete definition."
-#     #     f"[{self.definition}]"
-#     # )
-#     return dedent(
-#         f"""
-#       UnsupportedDefinitionException(
-#         path={self.path}\n,
-#         lineno={self.lineno}\n,
-#         definition={self.definition}\n,
-#       )
-#       """
-#     ).strip()
+    definition: UnsupportedParameter = UnsupportedParameter._NA
