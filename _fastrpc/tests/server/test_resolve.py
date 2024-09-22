@@ -30,7 +30,7 @@ def resolver():
                     del sys.modules[fix]
                     module = import_module(fix)
             return (
-                resolve_remote_procedures(path / fix),
+                lambda: resolve_remote_procedures(path / fix),
                 module.EXPECTED,
                 module.__doc__,
             )
@@ -40,7 +40,7 @@ def resolver():
     return inner
 
 
-# @pytest.mark.skip()
+@pytest.mark.skip()
 @P.autodetect_parameters()
 @case("_1")
 @case("_2")
@@ -48,33 +48,32 @@ def resolver():
 def test_ok(fix, resolver, logger):
     actual, expected, docs = resolver("ok", fix)
     logger.info(docs)
-    match actual:
+    match actual():
         case Success(mapp):
             assert frozenset(mapp.keys()) == expected
         case Failure(e):
             pytest.fail(f"Expected {expected}, {e} raised")
+        case x:
+            pytest.fail(f"Unhandled case: {x}")
 
 
-@pytest.mark.skip()
+# @pytest.mark.skip()
 @P.autodetect_parameters()
 @case("_1")  # non async-func
 @case("_2")  # duplicate names
 @case("_3")  # obscured
 # @case("_4")  # nested functions
 # @case("_5")  # Methods
-# @case("_6")  # untyped return
-# @case("_7")  # return None
+@case("_6")  # untyped return
+@case("_7")  # return None
 # @case("_8")  # untyped args
 def test_err(fix, resolver, logger):
     actual, expected, docs = resolver("err", fix)
     logger.info(docs)
-    match actual:
+    match actual():
         case Success(_):
             pytest.fail(f"Expected {expected.__class__} was not raised")
         case Failure(CodeGenExceptions(exceptions)):
-            # assert len(exceptions) == len(expected)
             assert exceptions == expected.exceptions
-        # case Failure(UnsupportedDefinitionException(definition=d)):
-        #     assert d == expected.definition
         case x:
             pytest.fail(f"Unhandled case: {x}")

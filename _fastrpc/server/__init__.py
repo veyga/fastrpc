@@ -67,6 +67,12 @@ class RemoteProcedureVisitor(ast.NodeVisitor):
                         if node.returns is None:
                             record(UnsupportedDefinition.NONE_RETURN)
                             return
+                        if (
+                            hasattr(node.returns, "value")
+                            and node.returns.value is None
+                        ):
+                            record(UnsupportedDefinition.NONE_RETURN)
+                            return
                         else:
                             self.matches[node.name] = RemoteProcedure(
                                 self.filepath, node
