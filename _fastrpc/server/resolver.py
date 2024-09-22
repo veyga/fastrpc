@@ -36,13 +36,7 @@ class RemoteProcedureResolver(ast.NodeVisitor):
             match decorator:
                 case ast.Name():
                     if decorator.id == remote_procedure.__name__:
-                        self.exceptions.append(
-                            UnsupportedDefinitionException(
-                                definition=UnsupportedDefinition.SYNCHRONOUS,
-                                path=self.filepath,
-                                lineno=node.lineno,
-                            )
-                        )
+                        self.err_def(node, UnsupportedDefinition.SYNCHRONOUS)
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         for decorator in node.decorator_list:
@@ -61,13 +55,25 @@ class RemoteProcedureResolver(ast.NodeVisitor):
                             return
                         if node.name.startswith("__"):
                             self.err_def(node, UnsupportedDefinition.OBSCURED)
-                        elif node.returns is None:
+                        if node.returns is None:
                             self.err_def(node, UnsupportedDefinition.NONE_RETURN)
-                        elif (
+                        if (
                             hasattr(node.returns, "value")
                             and node.returns.value is None
                         ):
                             self.err_def(node, UnsupportedDefinition.NONE_RETURN)
+                        if args := node.args.vararg:
+                            self.err_param(
+                                UnsupportedParameter.ARGS,
+                                lineno=args.lineno,
+                                symbol=args.arg,
+                            )
+                        if kwargs := node.args.kwarg:
+                            self.err_param(
+                                UnsupportedParameter.KWARGS,
+                                lineno=kwargs.lineno,
+                                symbol=kwargs.arg,
+                            )
                         if args := node.args.args:
                             for arg in args:
                                 if not arg.annotation:
@@ -76,7 +82,7 @@ class RemoteProcedureResolver(ast.NodeVisitor):
                                         lineno=arg.lineno,
                                         symbol=arg.arg,
                                     )
-                        else:
+                        if not self.exceptions:
                             self.matches[node.name] = RemoteProcedure(
                                 self.filepath, node
                             )

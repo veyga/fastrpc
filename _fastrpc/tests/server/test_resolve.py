@@ -6,23 +6,14 @@ from pathlib import Path
 from returns.result import Success, Failure
 
 from _fastrpc.server import resolve_remote_procedures
-from _fastrpc.server.exceptions import (
-    UnsupportedDefinitionException,
-    CodeGenExceptions,
-)
-
-
-FIX_PATH = Path(__file__).parent / "fixtures"
-
-
-case = lambda fix: P.case(name=fix, fix=fix)
+from _fastrpc.server.exceptions import CodeGenExceptions
 
 
 @pytest.fixture()
 def resolver():
     def inner(directory, fix):
         try:
-            path = FIX_PATH / directory
+            path = Path(__file__).parent / "fixtures" / directory
             sys.path.insert(0, str(path))
             module = import_module(fix)
             if fix in sys.modules:  # avoid module caching
@@ -38,6 +29,9 @@ def resolver():
             sys.path.pop(0)
 
     return inner
+
+
+case = lambda fix: P.case(name=fix, fix=fix)
 
 
 # @pytest.mark.skip()
@@ -68,7 +62,7 @@ def test_ok(fix, resolver, logger):
 @case("_6")  # untyped return
 @case("_7")  # return None
 @case("_8")  # untyped args
-# @case("_9")  # args/kwargs not supported
+@case("_9")  # args/kwargs not supported
 def test_err(fix, resolver, logger):
     actual, expected, docs = resolver("err", fix)
     logger.info(docs)
