@@ -42,7 +42,7 @@ class _RemoteProcedureVisitor(ast.NodeVisitor):
                                 path=self.filepath,
                                 lineno=node.lineno,
                                 msg=(
-                                    f"The remote_procedure name {node.name}"
+                                    f"The remote_procedure name {node.name} "
                                     f"is already assigned in {existing.module}"
                                 ),
                             )

@@ -11,7 +11,8 @@ class CodeGenException(Exception):
 
 @dataclass
 class DuplicatedNameException(CodeGenException):
-    pass
+    def __str__(self):
+        return f"DuplicateNameException({self.path}::{self.lineno}\n{self.msg}"
 
 
 @dataclass
