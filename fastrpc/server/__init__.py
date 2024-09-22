@@ -47,7 +47,8 @@ class _RemoteProcedureVisitor(ast.NodeVisitor):
                             raise DuplicatedNameException(
                                 path=self.filepath,
                                 lineno=node.lineno,
-                                conflict=existing,
+                                name=node.name,
+                                existing=existing.module,
                             )
                         exception = UnsupportedDefinitionException(
                             path=self.filepath,

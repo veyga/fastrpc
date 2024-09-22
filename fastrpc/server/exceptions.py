@@ -23,22 +23,23 @@ class UnsupportedDefinition(StrEnum):
 class DuplicatedNameException(Exception):
     path: Path = Path(__file__)
     lineno: int = 0
-    conflict: str = "TBD"
+    name: str = ""
+    existing: Path = Path(__file__)
 
-    # def __str__(self) -> str:
-    #     conflict = (
-    #         "@remote_procedure is decorating an invalid/incomplete definition."
-    #         f"\t[{self.definition}]"
-    #     )
-    #     return dedent(
-    #         f"""
-    #       UnsupportedDefinitionException(
-    #         path={self.path},
-    #         lineno={self.lineno},
-    #         msg={message}
-    #       )
-    #       """
-    #     ).strip()
+    def __str__(self) -> str:
+        message = (
+            f"@remote_procedure with name '{self.name}' already assigned."
+            f"[see {self.existing}]"
+        )
+        return dedent(
+            f"""
+          DuplicatedNameException(
+            path={self.path},
+            lineno={self.lineno},
+            msg={message}
+          )
+          """
+        ).strip()
 
 
 @dataclass
@@ -50,7 +51,7 @@ class UnsupportedDefinitionException(Exception):
     def __str__(self) -> str:
         message = (
             "@remote_procedure is decorating an invalid/incomplete definition."
-            f"\t[{self.definition}]"
+            f"[{self.definition}]"
         )
         return dedent(
             f"""
