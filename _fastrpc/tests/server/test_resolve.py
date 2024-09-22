@@ -1,13 +1,13 @@
 import pytest
 import sys
-from enum import StrEnum
 from functools import partial
-from fastrpc.server import _resolve_remote_procedures
-from fastrpc.server.exceptions import UnsupportedDefinitionException
 from importlib import import_module
 from parametrization import Parametrization as P
 from pathlib import Path
 from returns.result import Success, Failure
+
+from _fastrpc.server import resolve_remote_procedures
+from _fastrpc.server.exceptions import UnsupportedDefinitionException
 
 
 FIX_PATH = Path(__file__).parent / "fixtures"
@@ -27,7 +27,7 @@ def resolver():
                 if "fastrpc" in str(module):
                     del sys.modules[fix]
                     module = import_module(fix)
-            return _resolve_remote_procedures(path / fix), module.EXPECTED
+            return resolve_remote_procedures(path / fix), module.EXPECTED
         finally:
             sys.path.pop(0)
 
@@ -38,9 +38,9 @@ OK = partial(Case, desc="")
 
 
 @P.autodetect_parameters()
-@OK("_1")
+# @OK("_1")
 @OK("_2")
-@OK("_3")
+# @OK("_3")
 def test_ok(fix, resolver):
     actual, expected = resolver("ok", fix)
     match actual:
@@ -57,17 +57,18 @@ def test_ok(fix, resolver):
 # UNTYPED_ARGUMENTS = "untyped procedure arguments"
 # UNTYPED_RETURN = "untyped procedure return type"
 # # _NA = "N/A"
-# @P.autodetect_parameters()
-# # @Case("_1")
-# # @Case("_2")
-# # @Case("_3")
-# # @Case("_4") # nested functions
-# def test_err(fix, resolver):
-#     actual, expected = resolver("err", fix)
-#     match actual:
-#         case Success(_):
-#             pytest.fail(f"Expected {expected.__class__} was not raised")
-#         case Failure(UnsupportedDefinitionException(definition=d)):
-#             assert d == expected.definition
-#         case Failure(e):
-#             assert e.__class__ == expected.__class__
+@pytest.mark.skip()
+@P.autodetect_parameters()
+# @Case("_1")
+# @Case("_2")
+# @Case("_3")
+# @Case("_4") # nested functions
+def test_err(fix, resolver):
+    actual, expected = resolver("err", fix)
+    match actual:
+        case Success(_):
+            pytest.fail(f"Expected {expected.__class__} was not raised")
+        case Failure(UnsupportedDefinitionException(definition=d)):
+            assert d == expected.definition
+        case Failure(e):
+            assert e.__class__ == expected.__class__

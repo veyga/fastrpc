@@ -1,8 +1,6 @@
-"""
-Nested functions not yet supported
-"""
+"""Nested functions not yet supported"""
 
-from fastrpc.server.exceptions import (
+from _fastrpc.server.exceptions import (
     UnsupportedDefinition,
     UnsupportedDefinitionException,
 )

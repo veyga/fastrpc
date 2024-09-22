@@ -1,8 +1,6 @@
-"""
-Decorated non-async function
-"""
+"""Decorated non-async function"""
 
-from fastrpc.server.exceptions import (
+from _fastrpc.server.exceptions import (
     UnsupportedDefinition,
     UnsupportedDefinitionException,
 )

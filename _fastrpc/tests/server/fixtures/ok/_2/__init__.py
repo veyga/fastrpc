@@ -1,5 +1,3 @@
-"""
-Single coroutine
-"""
+"""Single coroutine"""
 
 EXPECTED = frozenset(("rp_1",))

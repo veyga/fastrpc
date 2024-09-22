@@ -1,6 +1,4 @@
-"""
-Multiple functions, unique
-"""
+"""Multiple functions, unique"""
 
 EXPECTED = frozenset(
     (
