@@ -1,5 +1,10 @@
 """
-Single coroutine
+Obscured not supported
 """
 
-EXPECTED = frozenset(("rp_1",))
+from fastrpc.server.exceptions import (
+    UnsupportedDefinition,
+    UnsupportedDefinitionException,
+)
+
+EXPECTED = UnsupportedDefinitionException(definition=UnsupportedDefinition.OBSCURED)

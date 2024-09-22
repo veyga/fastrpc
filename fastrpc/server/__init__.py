@@ -1,10 +1,16 @@
 import ast
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from enum import StrEnum
 from fastrpc.server.decorators import remote_procedure
+from functools import partial
 from pathlib import Path
 from textwrap import dedent
 from typing import TypedDict
-from .exceptions import DuplicatedNameException, SynchronousProcedureException
+from .exceptions import (
+    DuplicatedNameException,
+    UnsupportedDefinitionException,
+    UnsupportedDefinition,
+)
 
 
 @dataclass
@@ -24,29 +30,33 @@ class _RemoteProcedureVisitor(ast.NodeVisitor):
             match decorator:
                 case ast.Name():
                     if decorator.id == remote_procedure.__name__:
-                        raise SynchronousProcedureException(
+                        e = UnsupportedDefinitionException(
+                            definition=UnsupportedDefinition.SYNCHRONOUS,
                             path=self.filepath,
                             lineno=node.lineno,
-                            msg="@remote_procedure can only be used on async fns",
                         )
+                        raise e
 
     def visit_AsyncFunctionDef(self, node):
         for decorator in node.decorator_list:
             match decorator:
                 case ast.Name():
                     if decorator.id == remote_procedure.__name__:
-                        # check name is not already taken
                         if existing := self.matches.get(node.name):
                             raise DuplicatedNameException(
                                 path=self.filepath,
                                 lineno=node.lineno,
-                                msg=dedent(
-                                    f"""
-                      The remote_procedure name '{node.name}' is already assigned.
-                      [see {existing.module}]
-                              """
-                                ).strip(),
+                                conflict=existing,
                             )
+                        exception = UnsupportedDefinitionException(
+                            path=self.filepath,
+                            lineno=node.lineno,
+                        )
+                        if node.name.startswith("__"):
+                            e = replace(
+                                exception, definition=UnsupportedDefinition.OBSCURED
+                            )
+                            raise e
                         else:
                             self.matches[node.name] = _RemoteProcedure(
                                 self.filepath, node

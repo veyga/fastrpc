@@ -2,6 +2,9 @@
 Decorated non-async function
 """
 
-from fastrpc.server.exceptions import SynchronousProcedureException
+from fastrpc.server.exceptions import (
+    UnsupportedDefinition,
+    UnsupportedDefinitionException,
+)
 
-EXPECTED = SynchronousProcedureException
+EXPECTED = UnsupportedDefinitionException(definition=UnsupportedDefinition.SYNCHRONOUS)

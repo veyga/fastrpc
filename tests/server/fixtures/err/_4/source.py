@@ -1,14 +1,3 @@
-"""
-Inner functions not yet supported
-"""
-
-EXPECTED = frozenset(
-    (
-        "rp_1__inner",
-        "rp_2__inner",
-    )
-)
-
 from fastrpc.server.decorators import remote_procedure
 
 

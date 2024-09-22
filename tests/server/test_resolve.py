@@ -24,6 +24,7 @@ Case = lambda ex, fix: P.case(name=f"{ex}{fix}", ex=ex, fix=fix)
 @Case(Expected.OK, "_3")
 @Case(Expected.ERR, "_1")
 @Case(Expected.ERR, "_2")
+@Case(Expected.ERR, "_3")
 def test_it(ex, fix):
     path = FIX_PATH / ex.value
     sys.path.insert(0, str(path))
@@ -33,20 +34,22 @@ def test_it(ex, fix):
             if "fastrpc" in str(module):
                 del sys.modules[fix]
                 module = import_module(fix)
-        expected = module.EXPECTED
         match ex:
             case Expected.OK:
                 actual = _resolve_remote_procedures(path / fix)
-                assert frozenset(actual.keys()) == expected
+                assert frozenset(actual.keys()) == module.EXPECTED
             case Expected.ERR:
-                # try:
-                #   _resolve_remote_procedures(path / fix)
-                # except expected as e:
-                #   print(f"The exception is\n{e}")
-                # else:
-                #   pytest.fail(f"Expected {expected} was not raised")
-                with pytest.raises(expected):
+                expected = module.EXPECTED.__class__
+                try:
                     _resolve_remote_procedures(path / fix)
+                except expected as e:
+                    # test lineno's/path and such
+                    pass
+                    # print(f"The exception is\n{e}")
+                else:
+                    pytest.fail(f"Expected {expected} was not raised")
+                # with pytest.raises(expected):
+                #     _resolve_remote_procedures(path / fix)
             case x:
                 pytest.fail(f"Unknown fixture dir: {x}")
     finally:

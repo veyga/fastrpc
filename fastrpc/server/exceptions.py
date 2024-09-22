@@ -1,35 +1,48 @@
-from dataclasses import dataclass, fields
+# Why am I getting the following error when throwing an UnsupportedDefinitionException:
+#   TypeError: catching classes that do not inherit from BaseException is not allowed
+
+# Here is my source code:
+
+from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
+from textwrap import dedent
 
 
-def _prettyprint(cls):
-    def __str__(self):
-        field_values = ", ".join(
-            f"{field.name}={getattr(self, field.name)}" for field in fields(self)
+class UnsupportedDefinition(StrEnum):
+    SYNCHRONOUS = "synchronous (non-async)"
+    OBSCURED = "obscured defintion (ex: __fn)"
+    NESTED = "nested function"
+    METHOD = "methods"
+    UNTYPED_ARGUMENTS = "untyped procedure arguments"
+    UNTYPED_RETURN = "untyped procedure return type"
+    _NA = "N/A"
+
+
+@dataclass
+class DuplicatedNameException(Exception):
+    path: Path = Path(__file__)
+    lineno: int = 0
+    conflict: str = "TBD"
+
+
+@dataclass
+class UnsupportedDefinitionException(Exception):
+    path: Path = Path(__file__)
+    lineno: int = 0
+    definition: UnsupportedDefinition = UnsupportedDefinition._NA
+
+    def __str__(self) -> str:
+        message = (
+            "@remote_procedure is decorating an invalid/incomplete definition."
+            f"\t[{self.definition}]"
         )
-        return f"{self.__class__.__name__}({field_values})"
-
-    cls.__str__ = __str__
-    return cls
-
-
-@dataclass
-class CodeGenException(Exception):
-    path: Path
-    lineno: int
-    msg: str
-
-
-@_prettyprint
-@dataclass
-class DuplicatedNameException(CodeGenException): ...
-
-
-@_prettyprint
-@dataclass
-class SynchronousProcedureException(CodeGenException): ...
-
-
-@_prettyprint
-@dataclass
-class UntypedDefinitionException(CodeGenException): ...
+        return dedent(
+            f"""
+          UnsupportedDefinitionException(
+            path={self.path},
+            lineno={self.lineno},
+            msg={message}
+          )
+          """
+        ).strip()

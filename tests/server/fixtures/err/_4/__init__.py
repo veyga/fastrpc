@@ -1,5 +1,10 @@
 """
-Single coroutine
+Nested functions not yet supported
 """
 
-EXPECTED = frozenset(("rp_1",))
+from fastrpc.server.exceptions import (
+    UnsupportedDefinition,
+    UnsupportedDefinitionException,
+)
+
+EXPECTED = UnsupportedDefinitionException(definition=UnsupportedDefinition.NESTED)
