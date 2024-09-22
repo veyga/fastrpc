@@ -1,5 +1,7 @@
 """
-Single coroutine
+Duplicate names
 """
 
-EXPECTED = frozenset(("rp_1",))
+from fastrpc.server.exceptions import DuplicatedNameException
+
+EXPECTED = DuplicatedNameException

@@ -23,7 +23,8 @@ Test = lambda ex, fix: P.case(name=f"{ex}{fix}", ex=ex, fix=fix)
 @Test(Expected.OK, "_2")
 @Test(Expected.OK, "_3")
 @Test(Expected.ERR, "_1")
-def test_ok(ex, fix):
+@Test(Expected.ERR, "_2")
+def test_it(ex, fix):
     path = FIX_PATH / ex.value
     sys.path.insert(0, str(path))
     try:
