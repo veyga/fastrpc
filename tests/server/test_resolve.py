@@ -24,7 +24,8 @@ Case = lambda s: P.case(name=s, fix=s)
 
 @P.autodetect_parameters()
 @Case("_1")
-# @Case("_2")
+@Case("_2")
+@Case("_3")
 def test_ok(fix):
     ok_path = Path(__file__).parent / "fixtures" / "ok"
     sys.path.insert(0, str(ok_path))

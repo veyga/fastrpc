@@ -11,7 +11,7 @@ from .exceptions import CodeGenException, DuplicatedNameException
 @dataclass
 class _RemoteProcedure:
     module: Path
-    fn: ast.FunctionDef
+    fn: ast.AsyncFunctionDef
 
 
 class _RemoteProcedureMap(TypedDict):
@@ -20,13 +20,11 @@ class _RemoteProcedureMap(TypedDict):
 
 
 class _RemoteProcedureVisitor(ast.NodeVisitor):
-    def visit_FunctionDef(self, node):
-        # Check if the function has decorators
+    def visit_AsyncFunctionDef(self, node):
         for decorator in node.decorator_list:
             match decorator:
                 case ast.Name():
                     if decorator.id == remote_procedure.__name__:
-                        # check function is async
                         # check name is not already taken
                         if existing := self.matches.get(node.name):
                             raise DuplicatedNameException(
@@ -54,10 +52,10 @@ def _resolve_remote_procedures(src_root: Path) -> _RemoteProcedureMap:
     matches: _RemoteProcedureMap = {}
     for py_file in src_root.rglob("*.py"):
         with open(py_file, "r") as file:
-            tree: ast.Module = ast.parse(file.read(), filename=str(py_file))
+            module: ast.Module = ast.parse(file.read(), filename=str(py_file))
             visitor = _RemoteProcedureVisitor()
             visitor.set_context(matches, py_file)
-            visitor.visit(tree)
+            visitor.visit(module)
     return matches
 
 

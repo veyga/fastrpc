@@ -2,4 +2,4 @@
 Single coroutine
 """
 
-EXPECTED = frozenset("rp_1")
+EXPECTED = frozenset(("rp_1",))
