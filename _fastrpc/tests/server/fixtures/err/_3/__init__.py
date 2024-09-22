@@ -5,15 +5,16 @@ from pathlib import Path
 from _fastrpc.server.exceptions import (
     CodeGenExceptions,
     UnsupportedDefinition,
-    UnsupportedDefinitionException,
+    UnsupportedException,
 )
 
 EXPECTED = CodeGenExceptions(
     [
-        UnsupportedDefinitionException(
+        UnsupportedException(
             path=Path(__file__).parent / "source.py",
-            definition=UnsupportedDefinition.OBSCURED,
+            reason=UnsupportedDefinition.OBSCURED,
             lineno=5,
+            symbol="__rp_1",
         ),
     ]
 )

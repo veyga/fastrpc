@@ -1,12 +1,6 @@
-# Why am I getting the following error when throwing an UnsupportedDefinitionException:
-#   TypeError: catching classes that do not inherit from BaseException is not allowed
-
-# Here is my source code:
-
 from dataclasses import dataclass, fields
 from enum import StrEnum
 from pathlib import Path
-from textwrap import dedent
 
 
 def prettyprint(cls):
@@ -49,25 +43,15 @@ class UnsupportedDefinition(StrEnum):
     _NA = "N/A"
 
 
-@prettyprint
-@dataclass
-class UnsupportedDefinitionException(CodeGenException):
-    path: Path = Path(__file__)
-    lineno: int = -1
-    definition: UnsupportedDefinition = UnsupportedDefinition._NA
-
-
 class UnsupportedParameter(StrEnum):
     UNTYPED = "untyped (not annotated)"
     ARGS = "*args defined"
     KWARGS = "**kwargs defined"
-    _NA = "N/A"
 
 
-@prettyprint
 @dataclass
-class UnsupportedParameterException(CodeGenException):
+class UnsupportedException(CodeGenException):
     path: Path = Path(__file__)
+    reason: UnsupportedDefinition | UnsupportedParameter = UnsupportedDefinition._NA
     lineno: int = -1
     symbol: str = ""
-    definition: UnsupportedParameter = UnsupportedParameter._NA

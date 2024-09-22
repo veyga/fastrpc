@@ -63,6 +63,7 @@ def test_ok(fix, resolver, logger):
 @case("_7")  # return None
 @case("_8")  # untyped args
 @case("_9")  # args/kwargs not supported
+# @case("_10")  # def sup(*, yo): not supported
 def test_err(fix, resolver, logger):
     actual, expected, docs = resolver("err", fix)
     logger.info(docs)
@@ -71,6 +72,5 @@ def test_err(fix, resolver, logger):
             pytest.fail(f"Expected {expected.__class__} was not raised")
         case Failure(CodeGenExceptions(exceptions)):
             assert exceptions == expected.exceptions
-            # print(exceptions[0])
         case x:
             pytest.fail(f"Unhandled case: {x}")
