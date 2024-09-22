@@ -19,10 +19,19 @@ class UnsupportedDefinition(StrEnum):
     _NA = "N/A"
 
 
+@dataclass(init=False)
+class CodeGenException(Exception): ...
+
+
 @dataclass
-class DuplicatedNameException(Exception):
+class CodeGenExceptions(Exception):
+    exceptions: list[CodeGenException]
+
+
+@dataclass
+class DuplicatedNameException(CodeGenException):
     path: Path = Path(__file__)
-    lineno: int = 0
+    lineno: int = -1
     name: str = ""
     existing: Path = Path(__file__)
 
@@ -43,9 +52,9 @@ class DuplicatedNameException(Exception):
 
 
 @dataclass
-class UnsupportedDefinitionException(Exception):
+class UnsupportedDefinitionException(CodeGenException):
     path: Path = Path(__file__)
-    lineno: int = 0
+    lineno: int = -1
     definition: UnsupportedDefinition = UnsupportedDefinition._NA
 
     def __str__(self) -> str:

@@ -5,6 +5,6 @@ from _fastrpc.server.exceptions import (
     UnsupportedDefinitionException,
 )
 
-EXPECTED = UnsupportedDefinitionException(
-    definition=UnsupportedDefinition.UNTYPED_RETURN
-)
+EXPECTED = [
+    UnsupportedDefinitionException(definition=UnsupportedDefinition.UNTYPED_RETURN),
+]

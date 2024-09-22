@@ -5,6 +5,7 @@ from returns.result import safe
 from typing import TypedDict
 from _fastrpc.server.decorators import remote_procedure
 from .exceptions import (
+    CodeGenExceptions,
     DuplicatedNameException,
     UnsupportedDefinitionException,
     UnsupportedDefinition,
@@ -28,12 +29,13 @@ class RemoteProcedureVisitor(ast.NodeVisitor):
             match decorator:
                 case ast.Name():
                     if decorator.id == remote_procedure.__name__:
-                        e = UnsupportedDefinitionException(
-                            definition=UnsupportedDefinition.SYNCHRONOUS,
-                            path=self.filepath,
-                            lineno=node.lineno,
+                        self.exceptions.append(
+                            UnsupportedDefinitionException(
+                                definition=UnsupportedDefinition.SYNCHRONOUS,
+                                path=self.filepath,
+                                lineno=node.lineno,
+                            )
                         )
-                        raise e
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         for decorator in node.decorator_list:
@@ -41,20 +43,27 @@ class RemoteProcedureVisitor(ast.NodeVisitor):
                 case ast.Name():
                     if decorator.id == remote_procedure.__name__:
                         if existing := self.matches.get(node.name):
-                            raise DuplicatedNameException(
-                                path=self.filepath,
-                                lineno=node.lineno,
-                                name=node.name,
-                                existing=existing.module,
+                            self.exceptions.append(
+                                DuplicatedNameException(
+                                    path=self.filepath,
+                                    lineno=node.lineno,
+                                    name=node.name,
+                                    existing=existing.module,
+                                )
                             )
+                            return
                         exception = UnsupportedDefinitionException(
                             path=self.filepath,
                             lineno=node.lineno,
                         )
                         if node.name.startswith("__"):
-                            raise replace(
-                                exception, definition=UnsupportedDefinition.OBSCURED
+                            self.exceptions.append(
+                                replace(
+                                    exception,
+                                    definition=UnsupportedDefinition.OBSCURED,
+                                )
                             )
+                            return
                         else:
                             self.matches[node.name] = RemoteProcedure(
                                 self.filepath, node
@@ -63,7 +72,10 @@ class RemoteProcedureVisitor(ast.NodeVisitor):
         # Continue visiting other nodes
         self.generic_visit(node)
 
-    def set_context(self, matches: RemoteProcedureMap, filepath: Path):
+    def set_context(
+        self, exceptions: list, matches: RemoteProcedureMap, filepath: Path
+    ):
+        self.exceptions = exceptions
         self.matches = matches
         self.filepath = filepath
 
@@ -73,12 +85,15 @@ def resolve_remote_procedures(src_root: str) -> RemoteProcedureMap:
     if not (path := Path(src_root)).exists():
         raise ValueError(f"src_root ({src_root}) DNE")
     matches: RemoteProcedureMap = {}
+    exceptions = []
     for py_file in path.rglob("*.py"):
         with open(py_file, "r") as file:
             module: ast.Module = ast.parse(file.read(), filename=str(py_file))
             visitor = RemoteProcedureVisitor()
-            visitor.set_context(matches, py_file)
+            visitor.set_context(exceptions, matches, py_file)
             visitor.visit(module)
+    if exceptions:
+        raise CodeGenExceptions(exceptions)
     return matches
 
 
