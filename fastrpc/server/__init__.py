@@ -1,11 +1,8 @@
 import ast
 from dataclasses import dataclass, replace
-from enum import StrEnum
 from fastrpc.server.decorators import remote_procedure
-from functools import partial
 from pathlib import Path
-from returns.result import safe, Success, Failure
-from textwrap import dedent
+from returns.result import safe
 from typing import TypedDict
 from .exceptions import (
     DuplicatedNameException,
@@ -26,7 +23,7 @@ class _RemoteProcedureMap(TypedDict):
 
 
 class _RemoteProcedureVisitor(ast.NodeVisitor):
-    def visit_FunctionDef(self, node):
+    def visit_FunctionDef(self, node: ast.FunctionDef):
         for decorator in node.decorator_list:
             match decorator:
                 case ast.Name():
@@ -38,7 +35,7 @@ class _RemoteProcedureVisitor(ast.NodeVisitor):
                         )
                         raise e
 
-    def visit_AsyncFunctionDef(self, node):
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         for decorator in node.decorator_list:
             match decorator:
                 case ast.Name():
@@ -55,10 +52,9 @@ class _RemoteProcedureVisitor(ast.NodeVisitor):
                             lineno=node.lineno,
                         )
                         if node.name.startswith("__"):
-                            e = replace(
+                            raise replace(
                                 exception, definition=UnsupportedDefinition.OBSCURED
                             )
-                            raise e
                         else:
                             self.matches[node.name] = _RemoteProcedure(
                                 self.filepath, node
@@ -67,7 +63,7 @@ class _RemoteProcedureVisitor(ast.NodeVisitor):
         # Continue visiting other nodes
         self.generic_visit(node)
 
-    def set_context(self, matches, filepath):
+    def set_context(self, matches: _RemoteProcedureMap, filepath: Path):
         self.matches = matches
         self.filepath = filepath
 
