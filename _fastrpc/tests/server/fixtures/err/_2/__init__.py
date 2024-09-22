@@ -10,7 +10,7 @@ EXPECTED = CodeGenExceptions(
             path=Path(__file__).parent / "sourceA.py",
             lineno=5,
             name="rp_1",
-            existing=Path(__file__).parent / "sourceB.py",
+            conflicting_module=Path(__file__).parent / "sourceB.py",
         ),
     ]
 )

@@ -40,7 +40,7 @@ def resolver():
     return inner
 
 
-@pytest.mark.skip()
+# @pytest.mark.skip()
 @P.autodetect_parameters()
 @case("_1")
 @case("_2")
@@ -61,15 +61,14 @@ def test_ok(fix, resolver, logger):
 # @pytest.mark.skip()
 @P.autodetect_parameters()
 # @case("_1")  # non async-func
-# @case("_2")  # duplicate names
+@case("_2")  # duplicate names
 # @case("_3")  # obscured
 # @case("_4")  # nested functions
 # @case("_5")  # Methods
 # @case("_6")  # untyped return
 # @case("_7")  # return None
-@case("_8")  # untyped args
-# @case("_9")  # layered remote procedures?
-# @case("_10")  # args/kwargs not supported
+# @case("_8")  # untyped args
+# @case("_9")  # args/kwargs not supported
 def test_err(fix, resolver, logger):
     actual, expected, docs = resolver("err", fix)
     logger.info(docs)
@@ -78,5 +77,6 @@ def test_err(fix, resolver, logger):
             pytest.fail(f"Expected {expected.__class__} was not raised")
         case Failure(CodeGenExceptions(exceptions)):
             assert exceptions == expected.exceptions
+            # print(exceptions[0])
         case x:
             pytest.fail(f"Unhandled case: {x}")
