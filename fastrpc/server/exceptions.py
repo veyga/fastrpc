@@ -25,6 +25,21 @@ class DuplicatedNameException(Exception):
     lineno: int = 0
     conflict: str = "TBD"
 
+    # def __str__(self) -> str:
+    #     conflict = (
+    #         "@remote_procedure is decorating an invalid/incomplete definition."
+    #         f"\t[{self.definition}]"
+    #     )
+    #     return dedent(
+    #         f"""
+    #       UnsupportedDefinitionException(
+    #         path={self.path},
+    #         lineno={self.lineno},
+    #         msg={message}
+    #       )
+    #       """
+    #     ).strip()
+
 
 @dataclass
 class UnsupportedDefinitionException(Exception):
