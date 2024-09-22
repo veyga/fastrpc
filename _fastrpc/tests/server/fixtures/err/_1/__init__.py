@@ -1,10 +1,11 @@
 """Decorated non-async function"""
 
+from pathlib import Path
+
 from _fastrpc.server.exceptions import (
     UnsupportedDefinition,
     UnsupportedDefinitionException,
 )
-from pathlib import Path
 
 EXPECTED = [
     UnsupportedDefinitionException(

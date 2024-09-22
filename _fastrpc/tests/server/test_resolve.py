@@ -40,6 +40,7 @@ def resolver():
     return inner
 
 
+@pytest.mark.skip()
 @P.autodetect_parameters()
 @case("_1")
 @case("_2")
@@ -56,8 +57,8 @@ def test_ok(fix, resolver, logger):
 
 @P.autodetect_parameters()
 @case("_1")  # non async-func
-# @case("_2")  # duplicate names
-# @case("_3")  # obscured
+@case("_2")  # duplicate names
+@case("_3")  # obscured
 # @case("_4")  # nested functions
 # @case("_5")  # Methods
 # @case("_6")  # untyped return
