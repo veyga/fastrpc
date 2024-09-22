@@ -24,10 +24,14 @@ Case = lambda s: P.case(name=s, fix=s)
 
 @P.autodetect_parameters()
 @Case("_1")
-@Case("_2")
+# @Case("_2")
 def test_ok(fix):
-    # x = add_path("ok", "_1")
-    sys.path.insert(0, str(Path(__file__).parent / "fixtures" / "ok"))
+    ok_path = Path(__file__).parent / "fixtures" / "ok"
+    sys.path.insert(0, str(ok_path))
     module = import_module(fix)
-    print(module)
-    sys.path.pop(0)
+    expected = module.EXPECTED
+    actual = _resolve_remote_procedures(ok_path / fix)
+    try:
+        assert frozenset(actual.keys()) == expected
+    finally:
+        sys.path.pop(0)

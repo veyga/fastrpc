@@ -50,13 +50,14 @@ class _RemoteProcedureVisitor(ast.NodeVisitor):
         self.filepath = filepath
 
 
-def _resolve_remote_procedures(filepath: Path) -> _RemoteProcedureMap:
+def _resolve_remote_procedures(src_root: Path) -> _RemoteProcedureMap:
     matches: _RemoteProcedureMap = {}
-    with open(filepath, "r") as file:
-        tree: ast.Module = ast.parse(file.read(), filename=str(filepath))
-        visitor = _RemoteProcedureVisitor()
-        visitor.set_context(matches, filepath)  # Set the filename for error reporting
-        visitor.visit(tree)
+    for py_file in src_root.rglob("*.py"):
+        with open(py_file, "r") as file:
+            tree: ast.Module = ast.parse(file.read(), filename=str(py_file))
+            visitor = _RemoteProcedureVisitor()
+            visitor.set_context(matches, py_file)
+            visitor.visit(tree)
     return matches
 
 
@@ -66,6 +67,5 @@ def create(src_root: str = "src"):
     """
     if not (path := Path(src_root)).exists():
         raise ValueError(f"src_root ({src_root}) DNE")
-    for py_file in path.rglob("*.py"):
-        # TODO should mypy run on files with endpoints?
-        result = _resolve_remote_procedures(py_file)
+    matches = _resolve_remote_procedures(path)
+    print(matches)
