@@ -51,18 +51,14 @@ def test_ok(fix, resolver, logger):
             pytest.fail(f"Expected {expected}, {e} raised")
 
 
-# SYNCHRONOUS = "synchronous (non-async)"
-# OBSCURED = "obscured defintion (ex: __fn)"
-# NESTED = "nested function"
-# METHOD = "methods"
-# UNTYPED_ARGUMENTS = "untyped procedure arguments"
-# UNTYPED_RETURN = "untyped procedure return type"
-# # _NA = "N/A"
 @P.autodetect_parameters()
-@case("_1")
-@case("_2")
-@case("_3")
-# @Case("_4") # nested functions
+@case("_1")  # non async-func
+@case("_2")  # duplicate names
+@case("_3")  # obscured
+@case("_4")  # nested functions
+@case("_5")  # Methods
+@case("_6")  # untyped return
+@case("_7")  # untyped args
 def test_err(fix, resolver, logger):
     actual, expected, docs = resolver("err", fix)
     logger.info(docs)
