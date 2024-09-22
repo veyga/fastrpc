@@ -4,6 +4,7 @@ from enum import StrEnum
 from fastrpc.server.decorators import remote_procedure
 from functools import partial
 from pathlib import Path
+from returns.result import safe, Success, Failure
 from textwrap import dedent
 from typing import TypedDict
 from .exceptions import (
@@ -70,6 +71,7 @@ class _RemoteProcedureVisitor(ast.NodeVisitor):
         self.filepath = filepath
 
 
+@safe
 def _resolve_remote_procedures(src_root: Path) -> _RemoteProcedureMap:
     matches: _RemoteProcedureMap = {}
     for py_file in src_root.rglob("*.py"):
