@@ -14,7 +14,6 @@ class UnsupportedDefinition(StrEnum):
     OBSCURED = "obscured defintion (ex: __fn)"
     NESTED = "nested function"
     METHOD = "methods"
-    UNTYPED_ARGUMENTS = "untyped procedure arguments"
     NONE_RETURN = "procedure returning None"
     _NA = "N/A"
 
@@ -65,9 +64,29 @@ class UnsupportedDefinitionException(CodeGenException):
         return dedent(
             f"""
           UnsupportedDefinitionException(
-            path={self.path},
-            lineno={self.lineno},
-            msg={message}
+            msg={message}\n,
+            path={self.path}\n,
+            lineno={self.lineno}\n,
+          )
+          """
+        ).strip()
+
+
+@dataclass
+class UntypedParameterException(CodeGenException):
+    path: Path = Path(__file__)
+    lineno: int = -1
+    parameter: str = ""
+
+    def __str__(self) -> str:
+        message = "@remote_procedure is decorating an invalid/incomplete definition."
+        return dedent(
+            f"""
+          UntypedParameterException(
+            msg={message}\n
+            path={self.path}\n,
+            lineno={self.lineno}\n,
+            parameter={self.parameter}\n
           )
           """
         ).strip()

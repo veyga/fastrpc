@@ -1,29 +1,36 @@
-"""Untyped args not supported"""
+"""Untyped parameters not supported"""
 
 from pathlib import Path
 
 from _fastrpc.server.exceptions import (
     CodeGenExceptions,
-    UnsupportedDefinition,
-    UnsupportedDefinitionException,
+    UntypedParameterException,
 )
 
 EXPECTED = CodeGenExceptions(
     [
-        UnsupportedDefinitionException(
+        UntypedParameterException(
             path=Path(__file__).parent / "source.py",
-            definition=UnsupportedDefinition.NONE_RETURN,
-            lineno=6,
+            lineno=7,
+            parameter="x",
         ),
-        UnsupportedDefinitionException(
+        UntypedParameterException(
             path=Path(__file__).parent / "source.py",
-            definition=UnsupportedDefinition.NONE_RETURN,
-            lineno=11,
+            lineno=12,
+            parameter="x",
         ),
-        UnsupportedDefinitionException(
+        UntypedParameterException(
             path=Path(__file__).parent / "source.py",
-            definition=UnsupportedDefinition.NONE_RETURN,
-            lineno=16,
+            lineno=12,
+            parameter="y",
+        ),
+        UntypedParameterException(
+            path=Path(__file__).parent / "source.py", lineno=17, parameter="y"
+        ),
+        UntypedParameterException(
+            path=Path(__file__).parent / "source.py",
+            lineno=25,
+            parameter="z",
         ),
     ]
 )

@@ -7,6 +7,7 @@ from _fastrpc.server.decorators import remote_procedure
 from .exceptions import (
     CodeGenExceptions,
     DuplicatedNameException,
+    UntypedParameterException,
     UnsupportedDefinitionException,
     UnsupportedDefinition,
 )
@@ -38,7 +39,7 @@ class RemoteProcedureVisitor(ast.NodeVisitor):
                         )
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
-        def record(definition):
+        def unsupported(definition):
             self.exceptions.append(
                 UnsupportedDefinitionException(
                     path=self.filepath,
@@ -62,17 +63,24 @@ class RemoteProcedureVisitor(ast.NodeVisitor):
                             )
                             return
                         if node.name.startswith("__"):
-                            record(UnsupportedDefinition.OBSCURED)
-                            return
-                        if node.returns is None:
-                            record(UnsupportedDefinition.NONE_RETURN)
-                            return
-                        if (
+                            unsupported(UnsupportedDefinition.OBSCURED)
+                        elif node.returns is None:
+                            unsupported(UnsupportedDefinition.NONE_RETURN)
+                        elif (
                             hasattr(node.returns, "value")
                             and node.returns.value is None
                         ):
-                            record(UnsupportedDefinition.NONE_RETURN)
-                            return
+                            unsupported(UnsupportedDefinition.NONE_RETURN)
+                        if args := node.args.args:
+                            for arg in args:
+                                if not arg.annotation:
+                                    self.exceptions.append(
+                                        UntypedParameterException(
+                                            path=self.filepath,
+                                            lineno=arg.lineno,
+                                            parameter=arg.arg,
+                                        )
+                                    )
                         else:
                             self.matches[node.name] = RemoteProcedure(
                                 self.filepath, node

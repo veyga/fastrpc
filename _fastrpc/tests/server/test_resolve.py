@@ -45,6 +45,7 @@ def resolver():
 @case("_1")
 @case("_2")
 @case("_3")
+# @case("_4")  # layered remote procedures?
 def test_ok(fix, resolver, logger):
     actual, expected, docs = resolver("ok", fix)
     logger.info(docs)
@@ -59,14 +60,16 @@ def test_ok(fix, resolver, logger):
 
 # @pytest.mark.skip()
 @P.autodetect_parameters()
-@case("_1")  # non async-func
-@case("_2")  # duplicate names
-@case("_3")  # obscured
+# @case("_1")  # non async-func
+# @case("_2")  # duplicate names
+# @case("_3")  # obscured
 # @case("_4")  # nested functions
 # @case("_5")  # Methods
-@case("_6")  # untyped return
-@case("_7")  # return None
-# @case("_8")  # untyped args
+# @case("_6")  # untyped return
+# @case("_7")  # return None
+@case("_8")  # untyped args
+# @case("_9")  # layered remote procedures?
+# @case("_10")  # args/kwargs not supported
 def test_err(fix, resolver, logger):
     actual, expected, docs = resolver("err", fix)
     logger.info(docs)
