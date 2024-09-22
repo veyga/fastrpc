@@ -2,13 +2,15 @@
 
 from pathlib import Path
 
-from _fastrpc.server.exceptions import DuplicatedNameException
+from _fastrpc.server.exceptions import CodeGenExceptions, DuplicatedNameException
 
-EXPECTED = [
-    DuplicatedNameException(
-        path=Path(__file__).parent / "sourceA.py",
-        lineno=5,
-        name="rp_1",
-        existing=Path(__file__).parent / "sourceB.py",
-    ),
-]
+EXPECTED = CodeGenExceptions(
+    [
+        DuplicatedNameException(
+            path=Path(__file__).parent / "sourceA.py",
+            lineno=5,
+            name="rp_1",
+            existing=Path(__file__).parent / "sourceB.py",
+        ),
+    ]
+)

@@ -63,6 +63,7 @@ def test_ok(fix, resolver, logger):
 # @case("_5")  # Methods
 # @case("_6")  # untyped return
 # @case("_7")  # untyped args
+# @case("_8")  # return None
 def test_err(fix, resolver, logger):
     actual, expected, docs = resolver("err", fix)
     logger.info(docs)
@@ -70,9 +71,9 @@ def test_err(fix, resolver, logger):
         case Success(_):
             pytest.fail(f"Expected {expected.__class__} was not raised")
         case Failure(CodeGenExceptions(exceptions)):
-            assert len(exceptions) == len(expected)
-            assert exceptions == expected
+            # assert len(exceptions) == len(expected)
+            assert exceptions == expected.exceptions
         # case Failure(UnsupportedDefinitionException(definition=d)):
         #     assert d == expected.definition
-        case _:
-            pytest.fail("Unhandled case")
+        case x:
+            pytest.fail(f"Unhandled case: {x}")
