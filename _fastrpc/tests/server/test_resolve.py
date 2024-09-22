@@ -1,6 +1,5 @@
 import pytest
 import sys
-from functools import partial
 from importlib import import_module
 from parametrization import Parametrization as P
 from pathlib import Path
@@ -13,7 +12,7 @@ from _fastrpc.server.exceptions import UnsupportedDefinitionException
 FIX_PATH = Path(__file__).parent / "fixtures"
 
 
-Case = lambda fix, desc: P.case(name=f"{fix}:{desc}", fix=fix)
+case = lambda fix: P.case(name=fix, fix=fix)
 
 
 @pytest.fixture()
@@ -27,22 +26,24 @@ def resolver():
                 if "fastrpc" in str(module):
                     del sys.modules[fix]
                     module = import_module(fix)
-            return resolve_remote_procedures(path / fix), module.EXPECTED
+            return (
+                resolve_remote_procedures(path / fix),
+                module.EXPECTED,
+                module.__doc__,
+            )
         finally:
             sys.path.pop(0)
 
     return inner
 
 
-OK = partial(Case, desc="")
-
-
 @P.autodetect_parameters()
-# @OK("_1")
-@OK("_2")
-# @OK("_3")
-def test_ok(fix, resolver):
-    actual, expected = resolver("ok", fix)
+@case("_1")
+@case("_2")
+@case("_3")
+def test_ok(fix, resolver, logger):
+    actual, expected, docs = resolver("ok", fix)
+    logger.info(docs)
     match actual:
         case Success(mapp):
             assert frozenset(mapp.keys()) == expected
@@ -57,14 +58,14 @@ def test_ok(fix, resolver):
 # UNTYPED_ARGUMENTS = "untyped procedure arguments"
 # UNTYPED_RETURN = "untyped procedure return type"
 # # _NA = "N/A"
-@pytest.mark.skip()
 @P.autodetect_parameters()
-# @Case("_1")
-# @Case("_2")
-# @Case("_3")
+@case("_1")
+@case("_2")
+@case("_3")
 # @Case("_4") # nested functions
-def test_err(fix, resolver):
-    actual, expected = resolver("err", fix)
+def test_err(fix, resolver, logger):
+    actual, expected, docs = resolver("err", fix)
+    logger.info(docs)
     match actual:
         case Success(_):
             pytest.fail(f"Expected {expected.__class__} was not raised")
