@@ -40,7 +40,7 @@ def resolver():
     return inner
 
 
-@pytest.mark.skip()
+# @pytest.mark.skip()
 @P.autodetect_parameters()
 @case("_1")
 @case("_2")
@@ -55,6 +55,7 @@ def test_ok(fix, resolver, logger):
             pytest.fail(f"Expected {expected}, {e} raised")
 
 
+@pytest.mark.skip()
 @P.autodetect_parameters()
 @case("_1")  # non async-func
 @case("_2")  # duplicate names
@@ -62,8 +63,8 @@ def test_ok(fix, resolver, logger):
 # @case("_4")  # nested functions
 # @case("_5")  # Methods
 # @case("_6")  # untyped return
-# @case("_7")  # untyped args
-# @case("_8")  # return None
+# @case("_7")  # return None
+# @case("_8")  # untyped args
 def test_err(fix, resolver, logger):
     actual, expected, docs = resolver("err", fix)
     logger.info(docs)

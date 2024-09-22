@@ -15,7 +15,6 @@ class UnsupportedDefinition(StrEnum):
     NESTED = "nested function"
     METHOD = "methods"
     UNTYPED_ARGUMENTS = "untyped procedure arguments"
-    UNTYPED_RETURN = "untyped procedure return type"
     NONE_RETURN = "procedure returning None"
     _NA = "N/A"
 

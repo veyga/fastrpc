@@ -1,4 +1,4 @@
-"""Untyped args not supported"""
+"""Explicit None return not supported"""
 
 from pathlib import Path
 
@@ -12,18 +12,8 @@ EXPECTED = CodeGenExceptions(
     [
         UnsupportedDefinitionException(
             path=Path(__file__).parent / "source.py",
-            definition=UnsupportedDefinition.UNTYPED_RETURN,
-            lineno=6,
-        ),
-        UnsupportedDefinitionException(
-            path=Path(__file__).parent / "source.py",
-            definition=UnsupportedDefinition.UNTYPED_RETURN,
-            lineno=11,
-        ),
-        UnsupportedDefinitionException(
-            path=Path(__file__).parent / "source.py",
-            definition=UnsupportedDefinition.UNTYPED_RETURN,
-            lineno=16,
+            definition=UnsupportedDefinition.NONE_RETURN,
+            lineno=5,
         ),
     ]
 )

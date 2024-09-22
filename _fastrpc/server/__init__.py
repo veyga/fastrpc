@@ -38,6 +38,15 @@ class RemoteProcedureVisitor(ast.NodeVisitor):
                         )
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
+        def record(definition):
+            self.exceptions.append(
+                UnsupportedDefinitionException(
+                    path=self.filepath,
+                    lineno=node.lineno,
+                    definition=definition,
+                )
+            )
+
         for decorator in node.decorator_list:
             match decorator:
                 case ast.Name():
@@ -52,17 +61,11 @@ class RemoteProcedureVisitor(ast.NodeVisitor):
                                 )
                             )
                             return
-                        exception = UnsupportedDefinitionException(
-                            path=self.filepath,
-                            lineno=node.lineno,
-                        )
                         if node.name.startswith("__"):
-                            self.exceptions.append(
-                                replace(
-                                    exception,
-                                    definition=UnsupportedDefinition.OBSCURED,
-                                )
-                            )
+                            record(UnsupportedDefinition.OBSCURED)
+                            return
+                        if node.returns is None:
+                            record(UnsupportedDefinition.NONE_RETURN)
                             return
                         else:
                             self.matches[node.name] = RemoteProcedure(

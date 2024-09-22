@@ -2,8 +2,10 @@ from fastrpc.server.decorators import remote_procedure
 
 
 @remote_procedure
-async def rp_1(): ...
+async def rp_1() -> str:
+    return ""
 
 
 @remote_procedure
-async def rp_2(): ...
+async def rp_2() -> str:
+    return ""
