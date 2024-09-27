@@ -1,6 +1,15 @@
 import pytest
-from pytest import MonkeyPatch
+from enum import StrEnum
 from _fastrpc.utils.log import create_logger, LoggerName
+
+from parametrization import Parametrization as P
+
+case = lambda fix: P.case(name=fix, fix=fix)
+
+
+class Case(StrEnum):
+    OK = "ok"
+    ERR = "err"
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -8,7 +17,7 @@ def test_env():
     """
     Temporarily sets ENVIRONMENT=test for a pytest run
     """
-    with MonkeyPatch.context() as mp:
+    with pytest.MonkeyPatch.context() as mp:
         mp.setenv("ENVIRONMENT", "test")
         yield
 

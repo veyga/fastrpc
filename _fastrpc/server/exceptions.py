@@ -32,26 +32,27 @@ class DuplicatedNameException(CodeGenException):
     conflicting_module: Path = Path(__file__)
 
 
-class UnsupportedDefinition(StrEnum):
-    SYNCHRONOUS = "synchronous (non-async)"
-    OBSCURED = "obscured defintion (ex: __fn)"
-    NESTED = "nested function"
+class UnsupportedProcedure(StrEnum):
     METHOD = "methods"
-    NONE_RETURN = "procedure returning None"
-    ARGS_LIST = "procedure defining *args"
-    KWARGS_LIST = "procedure defining **kargs"
+    NESTED = "nested function"
+    OBSCURED = "obscured defintion (ex: __fn)"
+    RETURN_NONE = "procedure returning None"
+    SYNCHRONOUS = "synchronous (non-async)"
     _NA = "N/A"
 
 
 class UnsupportedParameter(StrEnum):
-    UNTYPED = "untyped (not annotated)"
     ARGS = "*args defined"
+    CUSTOM_TYPE = "type not @remote_procedure_parameter/BaseModel"
     KWARGS = "**kwargs defined"
+    KWONLY = "*, defined (keyword only)"
+    UNTYPED = "untyped (not annotated)"
 
 
+@prettyprint
 @dataclass
 class UnsupportedException(CodeGenException):
     path: Path = Path(__file__)
-    reason: UnsupportedDefinition | UnsupportedParameter = UnsupportedDefinition._NA
+    reason: UnsupportedProcedure | UnsupportedParameter = UnsupportedProcedure._NA
     lineno: int = -1
     symbol: str = ""

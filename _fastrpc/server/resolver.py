@@ -3,8 +3,8 @@ from pathlib import Path
 from _fastrpc.server.decorators import remote_procedure
 from .exceptions import (
     DuplicatedNameException,
-    UnsupportedDefinition as UD,
-    UnsupportedParameter as UP,
+    UnsupportedProcedure as UProc,
+    UnsupportedParameter as UParam,
     UnsupportedException,
 )
 from .types import RemoteProcedureMap, RemoteProcedure
@@ -26,7 +26,7 @@ class RemoteProcedureResolver(ast.NodeVisitor):
             match decorator:
                 case ast.Name():
                     if decorator.id == remote_procedure.__name__:
-                        self.err(UD.SYNCHRONOUS, node.lineno, node.name)
+                        self.err(UProc.SYNCHRONOUS, node.lineno, node.name)
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         for decorator in node.decorator_list:
@@ -44,22 +44,22 @@ class RemoteProcedureResolver(ast.NodeVisitor):
                             )
                             return
                         if node.name.startswith("__"):
-                            self.err(UD.OBSCURED, node.lineno, node.name)
+                            self.err(UProc.OBSCURED, node.lineno, node.name)
                         if node.returns is None:
-                            self.err(UD.NONE_RETURN, node.lineno, node.name)
+                            self.err(UProc.RETURN_NONE, node.lineno, node.name)
                         if (
                             hasattr(node.returns, "value")
                             and node.returns.value is None
                         ):
-                            self.err(UD.NONE_RETURN, node.lineno, node.name)
+                            self.err(UProc.RETURN_NONE, node.lineno, node.name)
                         if args := node.args.vararg:
-                            self.err(UP.ARGS, args.lineno, args.arg)
+                            self.err(UParam.ARGS, args.lineno, args.arg)
                         if kwargs := node.args.kwarg:
-                            self.err(UP.KWARGS, kwargs.lineno, kwargs.arg)
+                            self.err(UParam.KWARGS, kwargs.lineno, kwargs.arg)
                         if args := node.args.args:
                             for a in args:
                                 if not a.annotation:
-                                    self.err(UP.UNTYPED, a.lineno, a.arg)
+                                    self.err(UParam.UNTYPED, a.lineno, a.arg)
                         if not self.exceptions:
                             self.matches[node.name] = RemoteProcedure(
                                 self.filepath, node
