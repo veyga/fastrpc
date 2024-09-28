@@ -101,15 +101,15 @@ def write_class_to_file(class_def):
 
 
 # Use the decorator to create a dynamic class
-@dynamic_class_creator("DynamicClassKW", x=int, y=str)
+@dynamic_class_creator("DynamicClassKWWWW", x=int, y=str)
 class MyClass:
     pass
 
 
-# This will raise an error
-try:
-    instance = MyClass()  # Attempting to instantiate MyClass
-except TypeError as e:
-    print(e)  # Output: MyClass cannot be instantiated directly.
+# # This will raise an error
+# try:
+#     instance = MyClass()  # Attempting to instantiate MyClass
+# except TypeError as e:
+#     print(e)  # Output: MyClass cannot be instantiated directly.
 
 # Now you can import DynamicClass from the generated file

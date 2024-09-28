@@ -7,6 +7,11 @@ def remote_type(namespace: str = "root"):
     return final(dataclass)
 
 
+@remote_type()
+class RootContext:
+    something: str
+
+
 @remote_type(namespace="tags")
 class MyContext:
     token: str
