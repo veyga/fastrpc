@@ -1,1 +1,1 @@
-from ._client import *
+from _fastrpc.client import *
