@@ -1,4 +1,4 @@
-"""Duplicate names, idfk"""
+"""Duplicate names via override"""
 
 from pathlib import Path
 

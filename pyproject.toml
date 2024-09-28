@@ -18,6 +18,7 @@ pre-commit = "^3.8.0"
 ruff = "^0.6.6"
 pytest-parametrization = "^2022.2.1"
 mypy = "^1.11.2"
+pytest-asyncio = "^0.24.0"
 
 [tool.ruff]
 lint.ignore = ["E731"] # allow assignment of lambdas to a symbol

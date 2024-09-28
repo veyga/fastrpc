@@ -33,6 +33,7 @@ class DuplicatedNameException(CodeGenException):
 
 
 class UnsupportedProcedure(StrEnum):
+    MARKER = "@remote_procedure instead of @remote_procedure()"
     METHOD = "methods"
     NESTED = "nested function"
     OBSCURED = "obscured defintion (ex: __fn)"
@@ -56,3 +57,12 @@ class UnsupportedException(CodeGenException):
     reason: UnsupportedProcedure | UnsupportedParameter = UnsupportedProcedure._NA
     lineno: int = -1
     symbol: str = ""
+
+
+@prettyprint
+@dataclass
+class ContextException(CodeGenException):
+    path: Path = Path(__file__)
+    lineno: int = -1
+    name: str = ""
+    explanation: str = ""

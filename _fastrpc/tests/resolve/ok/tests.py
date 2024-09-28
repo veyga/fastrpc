@@ -10,5 +10,6 @@ TEST_PATH = Path(__file__)
 @case("_1")
 @case("_2")
 @case("_3")
+@case("context/_1")
 def test_ok(fix, run_resolve_test):
     run_resolve_test(Case.OK, TEST_PATH, fix)

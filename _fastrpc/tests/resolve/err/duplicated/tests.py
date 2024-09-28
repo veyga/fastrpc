@@ -7,7 +7,7 @@ TEST_PATH = Path(__file__)
 
 
 @P.autodetect_parameters()
-@case("_1")
-@case("_2")
+# @case("simple")
+@case("override")
 def test_duplicated(fix, run_resolve_test):
     run_resolve_test(Case.ERR, TEST_PATH, fix)

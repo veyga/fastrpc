@@ -5,13 +5,17 @@ _default:
 tests:
   pytest
 
-# debug all test suites
-dtests:
-  python -m debugpy --listen 0.0.0.0:5680 --wait-for-client -m pytest
-
-# run a test under _fastrpc/tests
-test TEST:
+# run a test under _fastrpc/tests (no arg tests all)
+test *TEST:
   pytest _fastrpc/tests/{{TEST}}
+
+# test with -k flag
+ktest ARG:
+  pytest -k {{ARG}}
+
+# test with -k flag
+dktest ARG:
+  python -m debugpy --listen 0.0.0.0:5680 --wait-for-client -m pytest -k {{ARG}}
 
 # debug a test under _fastrpc/tests
 dtest *TEST:
