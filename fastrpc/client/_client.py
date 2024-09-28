@@ -1,11 +1,24 @@
+from dataclasses import dataclass
 from typing import Callable
 from returns.future import FutureResultE
 
-type RPC[**A, B] = Callable[A, FutureResultE[B]]
+
+@dataclass
+class Ok[T]:
+    value: T
+
+
+@dataclass
+class Err[E]:
+    exception: E
+
+
+type RpcResult[T] = Ok[T] | Err[T]
+type RPC[**A, B] = Callable[A, RpcResult[B]]
 
 
 def apply_context[**A, B, Ctx](context: Ctx) -> RPC[[A], B]:
-    def apply(rpc) -> FutureResultE[B]:
+    def apply(rpc) -> RpcResult[B]:
         return rpc(context)
 
     return apply
@@ -13,5 +26,7 @@ def apply_context[**A, B, Ctx](context: Ctx) -> RPC[[A], B]:
 
 __all__ = [
     "RPC",
+    "Ok",
+    "Err",
     "apply_context",
 ]
