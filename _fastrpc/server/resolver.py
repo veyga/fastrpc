@@ -10,6 +10,23 @@ from .exceptions import (
 from .types import RemoteProcedureMap, RemoteProcedure
 from pprint import pprint
 
+# class MethodFunctionVisitor(ast.NodeVisitor):
+#     def __init__(self):
+#         self.current_class = None
+
+#     def visit_ClassDef(self, node):
+#         # Enter a class context
+#         self.current_class = node.name
+#         self.generic_visit(node)
+#         self.current_class = None  # Exit the class context
+
+#     def visit_FunctionDef(self, node):
+#         if self.current_class:
+#             print(f"Method defined in class '{self.current_class}': {node.name}")
+#         else:
+#             print(f"Standalone function defined: {node.name}")
+#         self.generic_visit(node)  # Continue traversing
+
 
 class RemoteProcedureResolver(ast.NodeVisitor):
     def err(self, reason, lineno, symbol):
