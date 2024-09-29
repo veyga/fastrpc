@@ -1,0 +1,22 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        IS_LOCAL: "true"
+    ports:
+      - 8000:8000
+      - 5680:5680 # debugging ports
+      - 5681:5681
+      - 5682:5682
+    volumes:
+      - ./:/app
+      - ./fastrpc:/app/fastrpc
+    env_file:
+      - .env
+    environment:
+      ENVIRONMENT: local
+      PYDEVD_DISABLE_FILE_VALIDATION: 1
+    command: >-
+      python -m debugpy --listen 0.0.0.0:5680 -m uvicorn src.main:app --reload --port=8000 --host=0.0.0.0 --workers=3 --log-config=logconfig

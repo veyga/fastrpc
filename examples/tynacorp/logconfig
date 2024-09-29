@@ -1,0 +1,49 @@
+[loggers]
+keys = gunicorn.error,gunicorn.access,root,colored
+
+[logger_root]
+level = INFO
+handlers = root
+qualname = root
+
+[logger_colored]
+level = DEBUG
+handlers = colored
+qualname = colored
+
+[logger_gunicorn.error]
+level = INFO
+handlers = root
+qualname = gunicorn.error
+
+[logger_gunicorn.access]
+level = INFO
+handlers = root
+qualname = gunicorn.access
+
+[handlers]
+keys = root,colored
+
+[handler_root]
+class = StreamHandler
+level = INFO
+formatter = root
+args = (sys.stdout,)
+
+[handler_colored]
+class = StreamHandler
+level = DEBUG
+formatter = colored
+propagate = False
+args = (sys.stdout,)
+
+[formatters]
+keys = root,colored
+
+[formatter_root]
+format = %(message)s
+class = src.shared.log.SimpleFormatter
+
+[formatter_colored]
+format = %(message)s
+class = src.shared.log.ColoredFormatter

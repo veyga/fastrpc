@@ -131,4 +131,3 @@ dmypy.json
 
 # personal dev configs
 pyrightconfig.json
-examples/

@@ -1,0 +1,16 @@
+**/charts/
+.env
+.venv/
+.vscode
+.env
+.DS_Store
+credentials.json
+**/__pycache__/
+.pytest_cache
+pyrightconfig.json
+log/
+run/
+.justfile
+.env
+db
+tmp/
