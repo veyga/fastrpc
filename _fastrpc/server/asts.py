@@ -1,7 +1,11 @@
 import ast
-from pathlib import Path
+from logging import Logger
+import shutil
 import subprocess
+from pathlib import Path
+from typing import Optional
 from ast import NodeTransformer, fix_missing_locations, dump
+from _fastrpc.server.utils.log import logger
 
 
 class RemoteFunctionTransformer(NodeTransformer):
@@ -81,10 +85,28 @@ def copy_files_with_remote_functions(source_dir: Path, target_dir: Path) -> None
         process_python_file(source_file, target_dir)
 
 
-# Usage Example:
-source_directory = Path("/path/to/source/python/files")
-target_directory = Path("/path/to/target/directory")
+def transform_source(
+    source_root: Path,
+    client_out: Path,
+) -> None:
+    """
+    Resolves + transforms all @fastrpc decorated definitions from a source root.
+    """
+    logger.info(
+        "\nTransforming sources...\n"
+        f"source_root = {source_root}\n"
+        f"client_out = {client_out}\n"
+    )
+    try:
+        if client_out.exists():
+            logger.debug("eleting existing client sources..")
+            shutil.rmtree(client_out)
+        # copy_files_with_remote_functions(source_root, Path(client_out))
+        print(f"Done, check directory for new source files: '{client_out}''")
+    except Exception as e:
+        print(f"Error: {e}")
 
 
-def transform_fastrpc(source_directory: Path) -> None:
-    copy_files_with_remote_functions(source_directory, target_directory)
+__all__ = [
+    "transform_source",
+]
