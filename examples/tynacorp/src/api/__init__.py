@@ -1,1 +1,0 @@
-PATH = "/fastapi-playground"
