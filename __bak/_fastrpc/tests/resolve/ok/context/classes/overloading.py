@@ -105,7 +105,6 @@ _MISSING = object()
 
 
 class OverloadDict(dict):
-
     def __setitem__(self, key, value):
         assert isinstance(key, str), "keys must be str"
 
@@ -146,7 +145,6 @@ def overload_dict_usage():
 
 
 class OverloadMeta(type):
-
     @classmethod
     def __prepare__(mcs, name, bases):
         return OverloadDict()

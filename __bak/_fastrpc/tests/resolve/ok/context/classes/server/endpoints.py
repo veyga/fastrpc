@@ -8,7 +8,6 @@ TAGS = ["A1", "A2"]
 
 @remote_procedure_class(requires=[Token])
 class Tags:
-
     # TODO how to handle default arguments
     # TODO assert that the return type is a primitive or remote_procedure_type
 
