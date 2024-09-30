@@ -12,7 +12,7 @@ _B = TypeVar("_B")
 _R = TypeVar("_R", covariant=True)
 
 
-def fastrpc_api(
+def remote_procedure(
     function: Callable[_Params, Coroutine[_A, _B, _R]],
 ) -> Callable[_Params, _R]:
     """Marks a function as transformable via fastrpc"""
@@ -28,5 +28,5 @@ def fastrpc_api(
 
 
 __all__ = [
-    "fastrpc_api",
+    "remote_procedure",
 ]

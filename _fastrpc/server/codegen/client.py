@@ -75,4 +75,5 @@ from _fastrpc.server.utils.log import logger
 
 def source_to_client(source_root: Path, client_out: Path) -> None:
     logger.info(f"Generating client code...")
+    client_out.mkdir(parents=True, exist_ok=True)
     logger.info(f"Client code generated [see {str(client_out)}]")
