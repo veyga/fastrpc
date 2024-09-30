@@ -9,17 +9,6 @@ from _fastrpc.server.codegen import transform_source
 from _fastrpc.server.exceptions import FastRPCException
 from _fastrpc.server.utils.log import logger
 
-# import random
-# import string
-
-
-# def random_string():
-#     return lambda k=16: "".join(random.choices(string.ascii_letters, k=k))
-
-
-# def custom_generate_unique_id(route):
-#     return f"{route.name}YOOOOO"
-
 type LifecycleOp = Optional[Callable[[FastAPI], None]]
 
 
@@ -51,8 +40,8 @@ def create_app(
         title (str): The name of the FastAPI application.
         src_root (Path): Dir containing the source code to be transformed.
         client_out (Path): Directory to the generated client code will be stored.
-        on_reload (fn): Function to run on app start & every reload
-        on_stop (fn): Function to run on app shutdown
+        on_reload (fn): Function to run on app start [initial + every reload]
+        on_stop (fn): Function to run on app stop [shutdown + before every reload]
 
     Returns:
         FastAPI: An instance of the FastAPI application.
@@ -69,7 +58,7 @@ def create_app(
         async def lifespan(app: FastAPI):
 
             def include_fastrpc_server():
-                mod = import_module("__fastrpc_server__.fastrpc_router")
+                mod = import_module("__fastrpc_server__")
                 app.include_router(mod.router)
 
             transform_source(src_root, client_out)
@@ -90,7 +79,6 @@ def create_app(
             raise FastRPCException(f"src_root {src_root} does not exist!")
         return FastAPI(
             openapi_url=f"/{title}/openapi.json",
-            # generate_unique_id_function=custom_generate_unique_id,
             docs_url=f"/{title}/swagger",
             redoc_url=f"/{title}/redoc",
             lifespan=lifespan,
@@ -100,6 +88,8 @@ def create_app(
         case Success(api):
             return api
         case Failure(e):
+            # TODO: do I need to catch here?
+            # want a cleaner error message than printing a whole stack trace
             logger.error(e)
             raise e
 
