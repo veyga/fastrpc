@@ -14,15 +14,12 @@ _R = TypeVar("_R", covariant=True)
 
 def remote_procedure(
     function: Callable[_Params, Coroutine[_A, _B, _R]],
-) -> Callable[_Params, _R]:
+) -> Callable[_Params, Coroutine[_A, _B, _R]]:
     """Marks a function as transformable via fastrpc"""
 
-    async def factory(*args: _Params.args, **kwargs: _Params.kwargs) -> _R:
-        return await function(*args, **kwargs)
-
     @wraps(function)
-    def decorator(*args, **kwargs):
-        return factory(*args, **kwargs)
+    async def decorator(*args, **kwargs) -> _R:
+        return await function(*args, **kwargs)
 
     return decorator
 

@@ -4,21 +4,23 @@ from fastapi import FastAPI
 from importlib import import_module
 from pathlib import Path
 from returns.result import Success, Failure, safe
-from typing import final
+from typing import Optional, Callable
 from _fastrpc.server.codegen import transform_source
 from _fastrpc.server.exceptions import FastRPCException
 from _fastrpc.server.utils.log import logger
 
-import random
-import string
+# import random
+# import string
 
 
-def random_string():
-    return lambda k=16: "".join(random.choices(string.ascii_letters, k=k))
+# def random_string():
+#     return lambda k=16: "".join(random.choices(string.ascii_letters, k=k))
 
 
-def custom_generate_unique_id(route):
-    return f"{route.name}YOOOOO"
+# def custom_generate_unique_id(route):
+#     return f"{route.name}YOOOOO"
+
+type LifecycleOp = Optional[Callable[[FastAPI], None]]
 
 
 def create_app(
@@ -26,6 +28,8 @@ def create_app(
     title: str,
     src_root: Path,
     client_out: Path,
+    on_start: LifecycleOp = None,
+    on_stop: LifecycleOp = None,
 ) -> FastAPI:
     """
     Creates a FastAPI application and generates the corresponding client library.
@@ -47,6 +51,8 @@ def create_app(
         title (str): The name of the FastAPI application.
         src_root (Path): Dir containing the source code to be transformed.
         client_out (Path): Directory to the generated client code will be stored.
+        on_reload (fn): Function to run on app start & every reload
+        on_stop (fn): Function to run on app shutdown
 
     Returns:
         FastAPI: An instance of the FastAPI application.
@@ -74,7 +80,11 @@ def create_app(
                 sys.path.pop(0)
             else:
                 include_fastrpc_server()
+            if on_start:
+                on_start(app)
             yield
+            if on_stop:
+                on_stop(app)
 
         if not src_root.exists():
             raise FastRPCException(f"src_root {src_root} does not exist!")
