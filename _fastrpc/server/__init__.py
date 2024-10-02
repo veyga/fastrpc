@@ -1,11 +1,10 @@
-import sys
+import shutil
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from importlib import import_module
 from pathlib import Path
 from returns.result import Success, Failure, safe
 from typing import Optional, Callable
-from _fastrpc.server.codegen import transform_source
+from _fastrpc.server.resolve import build_router
 from _fastrpc.server.exceptions import FastRPCException
 from _fastrpc.server.utils.log import logger
 
@@ -53,22 +52,23 @@ def create_app(
 
     @safe
     def inner():
+        def build(app: FastAPI):
+            logger.info("Building application...")
+            if client_out.exists():
+                logger.info("Deleting generated client sources...")
+                shutil.rmtree(client_out)
+                logger.info("Existing client lib deleted")
+            logger.info("Creating server components...")
+            router = build_router(src_root)
+            app.include_router(router)
+            logger.info("Server components complete")
+            logger.info("Creating client lib...")
+            logger.info("Client lib complete")
+            logger.info(f"fastrpc complete")
 
         @asynccontextmanager
         async def lifespan(app: FastAPI):
-
-            def include_fastrpc_server():
-                mod = import_module("__fastrpc_server__")
-                app.include_router(mod.router)
-
-            transform_source(src_root, client_out)
-            server_path = str(src_root)
-            if not sys.path[0] == server_path:
-                sys.path.insert(0, server_path)
-                include_fastrpc_server()
-                sys.path.pop(0)
-            else:
-                include_fastrpc_server()
+            build(app)
             if on_start:
                 on_start(app)
             yield
