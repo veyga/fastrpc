@@ -59,9 +59,16 @@ def create_app(
                 shutil.rmtree(client_out)
                 logger.info("Existing client lib deleted")
             logger.info("Creating server components...")
-            router = build_router(src_root)
-            app.include_router(router)
-            logger.info("Server components complete")
+            result = build_router(src_root)
+            match result:
+                case Success(router):
+                    logger.info("Server components complete")
+                    print(f"{router = }")
+                    app.include_router(router)
+                case Failure(e):
+                    logger.error(e)
+                    return
+
             logger.info("Creating client lib...")
             logger.info("Client lib complete")
             logger.info(f"fastrpc complete")

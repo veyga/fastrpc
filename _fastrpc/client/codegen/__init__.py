@@ -4,6 +4,9 @@ from pathlib import Path
 from ast import NodeTransformer, fix_missing_locations, dump
 from _fastrpc.server.utils.log import logger
 
+# *******************
+# use typing.get_type_hints
+# ******************
 
 # class RemoteFunctionTransformer(NodeTransformer):
 #     """
